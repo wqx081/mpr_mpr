@@ -1,0 +1,37 @@
+package ant;
+
+message InstanceMetadataPB {
+  required bytes uuid = 1;
+  required string format_stamp = 2;
+}
+
+message PathSetPB {
+  required bytes uuid = 1;
+  repeated bytes all_uuids = 2;
+}
+
+message PathInstanceMetadataPB {
+  required PathSetPB path_set = 1;
+  required string block_manager_type = 2;
+  required uint64 filesystem_block_size_bytes = 3;
+}
+
+//////////// For Block
+
+message BlockIdPB {
+  required fixed64 id = 1;
+}
+
+enum BlockRecordType {
+  UNKNOWN = 0;
+  CREATE = 1;
+  DELETE = 2;
+}
+
+message BlockRecordPB {
+  required BlockIdPB block_id = 1;
+  required BlockRecordType op_type = 2;
+  required uint64 timestamp_us = 3;
+  optional int64 offset = 4;
+  optional int64 length = 5;
+}

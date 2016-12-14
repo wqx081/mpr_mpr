@@ -1,0 +1,77 @@
+package mprmpr.server;
+
+import "mprmpr/common/common.proto";
+import "mprmpr/common/version_info.proto";
+import "mprmpr/common/wire_protocol.proto";
+
+message ServerStatusPB {
+  required NodeInstancePB node_instance = 1;
+  repeated HostPortPB bound_rpc_addresses = 2;
+  repeated HostPortPB bound_http_addresses = 3;
+  optional VersionInfoPB version_info = 4;
+}
+
+message SetFlagRequestPB {
+  required string flag = 1;
+  required string value = 2;
+  optional bool force = 3 [default = false];
+}
+
+message SetFlagResponsePB {
+  enum Code {
+    UNKNOWN = 0;
+    SUCCESS = 1;
+    NO_SUCH_FLAG = 2;
+    BAD_VALUE = 3;
+
+    NOT_SAFE = 4;
+  }
+
+  required Code result = 1;
+  optional string msg = 2;
+  optional string old_value = 3;
+}
+
+message FlushCoverageRequestPB {
+}
+message FlushCoverageResponsePB {
+  optional bool success = 1;
+}
+
+message ServerClockRequestPB {
+}
+message ServerClockResponsePB {
+  optional fixed64 timestamp = 1;
+}
+
+message GetStatusRequestPB {
+}
+message GetStatusResponsePB {
+  required ServerStatusPB status = 1;
+}
+
+message SetServerWallClockForTestsRequestPB {
+  optional uint64 now_usec = 1;
+  optional uint64 max_error_usec = 2;
+}
+
+message SetServerWallClockForTestsResponsePB {
+  required bool success = 1;
+}
+
+service GenericService {
+  rpc SetFlag(SetFlagRequestPB)
+    returns (SetFlagResponsePB);
+
+  rpc FlushCoverage(FlushCoverageRequestPB)
+    returns (FlushCoverageResponsePB);
+
+  rpc ServerClock(ServerClockRequestPB)
+    returns (ServerClockResponsePB);
+
+  rpc SetServerWallClockForTests(SetServerWallClockForTestsRequestPB)
+    returns (SetServerWallClockForTestsResponsePB);
+
+  rpc GetStatus(GetStatusRequestPB)
+    returns (GetStatusResponsePB);
+}

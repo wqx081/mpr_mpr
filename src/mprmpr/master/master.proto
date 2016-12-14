@@ -1,0 +1,59 @@
+// Master service
+
+/*
+    service MasterService {
+
+        rpc Ping(PingRequestPB) retursn (PingResponsePB);
+        
+        // Worker -> Master RPCs
+        rpc WorkerHearbeat(WorkHearbeatRequestPB) returns (WorkerHearbeatResponsePB);
+
+        // Client -> Master RPCs
+        rpc CreateJob(CreateJobRequestPB) returns (CreateJobResponsePB);
+        rpc CancelJob(CancelJobRequestPB) returns (CancelJobResponsePB);
+        rpc ListJobs(ListJobsRequestPB) returns (ListJobsResponsePB);
+    }
+ */
+
+package mprmpr.master;
+
+import "mprmpr/common/common.proto";
+
+
+message MasterErrorPB {
+  enum Code {
+    UNKNOWN_ERROR = 999;
+  }
+
+  required Code code = 1;
+  required AppStatusPB status = 2;
+}
+
+message WorkerToMasterCommonPB {
+  required NodeInstancePB worker_instance = 1;
+  optional HostPortPB rpc_address = 2;
+}
+
+// RPCs
+message PingRequestPB {
+}
+
+message PingResponsePB {
+}
+
+message WorkerHeartbeatRequestPB {
+  required WorkerToMasterCommonPB common = 1;
+  optional ServerRegistrationPB registration = 2;
+  required WorkerStatusPB worker_status = 3;  
+}
+
+message WorkerHeartbeatResponsePB {
+  optional MasterErrorPB error = 1;
+}
+
+service MasterService {
+  rpc Ping(PingRequestPB) returns (PingResponsePB);
+
+  // Worker->Master RPCs
+  rpc WorkerHeartbeat(WorkerHeartbeatRequestPB) returns (WorkerHeartbeatResponsePB);
+}

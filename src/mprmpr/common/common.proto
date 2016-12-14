@@ -1,0 +1,94 @@
+package mprmpr;
+
+message HostPortPB {
+  required string host = 1;
+  required uint32 port = 2;
+}
+
+message AppStatusPB {
+  enum ErrorCode {
+    UNKNOWN_ERROR = 999;
+    OK = 0;
+    NOT_FOUND = 1;
+    CORRUPTION = 2;
+    NOT_SUPPORTED = 3;
+    INVALID_ARGUMENT = 4;
+    IO_ERROR = 5;
+    ALREADY_PRESENT = 6;
+    RUNTIME_ERROR = 7;
+    NETWORK_ERROR = 8;
+    ILLEGAL_STATE = 9;
+    NOT_AUTHORIZED = 10;
+    ABORTED = 11;
+    REMOTE_ERROR = 12;
+    SERVICE_UNAVAILABLE = 13;
+    TIMED_OUT = 14;
+    UNINITIALIZED = 15;
+    CONFIGURATION_ERROR = 16;
+    INCOMPLETE = 17;
+    END_OF_FILE = 18;
+  }
+
+  required ErrorCode code = 1;
+  optional string message = 2;
+  optional int32 posix_code = 4;
+}
+
+////////////////////////////////// Node 
+
+message NodeInstancePB {
+  required bytes permanent_uuid = 1;
+  required int64 instance_seqno = 2;
+}
+
+message ServerRegistrationPB {
+  repeated HostPortPB rpc_addresses = 1;
+  repeated HostPortPB http_addresses = 2;
+  optional string software_version = 3;
+}
+
+/////////////////////////////////  Job
+
+message JobMetadataPB {
+  required string source_path = 1;
+  required string target_path = 2;
+  required string decrypt_key = 3;
+  required string encrypt_key = 4;
+  required string mpr_uuid = 5;
+}
+
+message JobDescriptorPB {
+
+  enum JobState {
+    INIT = 0;
+    UNPACK = 1;
+    DECRYPT = 2;
+    TRANSCODE = 3;
+    ENCRYPT = 4;
+    PACK = 5;
+    COMPLETE = 6;
+  }
+
+  enum JobStatus {
+    OK = 0;
+    FAILD = 1;
+    PROCESSING = 2;
+  }
+
+  required JobMetadataPB job_metadata = 1;
+  //
+  optional string job_uuid = 2;
+  optional JobState job_state = 3;
+}
+
+// Worker
+message WorkerLoadPB {
+  required double cpu_load = 1;
+  required double mem_load = 2;
+  required double disk_load = 3;
+}
+
+message WorkerStatusPB {
+  required WorkerLoadPB worker_load = 1;
+  required int32 pending_tasks = 2;
+}

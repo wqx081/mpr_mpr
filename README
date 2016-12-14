@@ -1,0 +1,19 @@
+
+////// main.cc
+WebServerOptions options;
+options.bind_interface = ...;
+options.port = ...;
+...
+
+std::unique_ptr<WebServer> web_server = new WebServer(options);
+
+web_server->Start();
+
+
+////// handler.h
+
+void AddTranscoderPathHandler(std::unique_ptr<WebServer>& web_server);
+void AddReencryptPathHandler(std::unique_ptr<WebServer>& web_server);
+void RegisterMetricsJsonHandler(std::unique_ptr<WebServer>& webserver, const MetricRegistry* const metrics);
+
+////// handler.cc

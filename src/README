@@ -1,0 +1,54 @@
+
+// HTTP
+
+    POST /api/mpr/tc
+    POST /api/mpr/reencrypt
+    GET  /api/mpr/jobs
+    GET  /api/mpr/job/status
+    GET  /api/mpr/works
+    GET  /api/mpr/work/status
+
+
+// Master RPCs
+    service MasterService {
+
+        rpc Ping(PingRequestPB) retursn (PingResponsePB);
+        
+        // Worker -> Master RPCs
+        rpc WorkerHearbeat(WorkHearbeatRequestPB) returns (WorkerHearbeatResponsePB);
+
+        // Client -> Master RPCs
+        rpc CreateJob(CreateJobRequestPB) returns (CreateJobResponsePB);
+        rpc CancelJob(CancelJobRequestPB) returns (CancelJobResponsePB);
+        rpc ListJobs(ListJobsRequestPB) returns (ListJobsResponsePB);
+    }   
+
+// Worker Node RPCs
+
+    service WorkerService {
+
+        // Master -> Worker 
+        rpc DoTask(DoTaskRequestPB) returns (DoTaskResponsePB);
+        rpc UndoTask(UndoTaskRequestPB) returns (UndoTaskResponsePB);
+        rpc GetInstanceStatus(GetInstanceStatusRequestPB) returns (GetInstanceStatusResponsePB);
+    }    
+
+
+// Master
+
+  0) vector<WorkerDescriptor> live_workers = GetAllLivesWorkers();
+  1) Scheduler scheduler;
+  2) scheduler.Schedule(live_workers, JobDescriptor);
+
+
+  // /job/status
+  0) JobManagerSingleton job_manager;
+  1) Iterator for JobDescriptor by job_manager:
+     it->job_name;
+     it->job_uuid;
+     it->job_task_status;
+     it->job_task_complete_progress;
+     ...
+
+  // /works/
+  

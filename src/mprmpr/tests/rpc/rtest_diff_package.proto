@@ -1,0 +1,8 @@
+// Request/Response in different package to test that RPC methods
+// handle arguments with packages different from the service itself.
+package mprmpr.rpc_test_diff_package;
+
+message ReqDiffPackagePB {
+}
+message RespDiffPackagePB {
+}

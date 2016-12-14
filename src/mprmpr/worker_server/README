@@ -1,0 +1,1 @@
+./mpr_worker_server --webserver_port 8864 --rpc_bind_addresses  "0.0.0.0:8865" --worker_server_master_addrs="0.0.0.0:9982" --alsologtostderr
