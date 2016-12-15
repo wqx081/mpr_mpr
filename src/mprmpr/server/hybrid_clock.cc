@@ -271,10 +271,6 @@ Status HybridClock::Update(const Timestamp& to_update) {
   return Status::OK();
 }
 
-bool HybridClock::SupportsExternalConsistencyMode(ExternalConsistencyMode mode) {
-  return true;
-}
-
 bool HybridClock::HasPhysicalComponent() {
   return true;
 }

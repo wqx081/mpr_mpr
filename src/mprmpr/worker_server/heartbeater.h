@@ -11,7 +11,7 @@
 namespace mprmpr {
 
 namespace master {
-class WorkerReportPB;
+class WorkerStatusPB;
 } // namespace master
 
 namespace worker_server {
@@ -24,15 +24,8 @@ class Heartbeater {
   Heartbeater(const WorkerServerOptions& options, WorkerServer* server);
   Status Start();
   Status Stop();
-  void TriggerASAP();
-  //TODO(wqx):
-  //
+//  void TriggerASAP();
   ~Heartbeater();
-
-  std::vector<master::WorkerReportPB> GenerateIncrementalWorkerReportsForTests();
-  std::vector<master::WorkerReportPB> GenerateFullWorkerReportsForTests();
-  void MarkWorkerReportsAcknowledgedForTests(
-      const std::vector<master::WorkerReportPB>& reports);
 
  private:
   class Thread;

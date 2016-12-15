@@ -6,6 +6,7 @@ CXX=g++
 
 CPP_SOURCES := \
 	common.pb.cc \
+	common.cc \
 	version_info.pb.cc \
 	version_info.cc \
 	timestamp.cc \

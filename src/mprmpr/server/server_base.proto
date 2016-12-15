@@ -2,7 +2,6 @@ package mprmpr.server;
 
 import "mprmpr/common/common.proto";
 import "mprmpr/common/version_info.proto";
-import "mprmpr/common/wire_protocol.proto";
 
 message ServerStatusPB {
   required NodeInstancePB node_instance = 1;

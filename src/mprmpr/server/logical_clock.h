@@ -52,11 +52,6 @@ class LogicalClock : public Clock {
   // Mostly used for tests/metrics.
   uint64_t GetCurrentTime();
 
-  // Logical clock doesn't support COMMIT_WAIT.
-  virtual bool SupportsExternalConsistencyMode(ExternalConsistencyMode mode) override {
-    return mode != COMMIT_WAIT;
-  }
-
   // Creates a logical clock whose first output value on a Now() call is 'timestamp'.
   static LogicalClock* CreateStartingAt(const Timestamp& timestamp);
 

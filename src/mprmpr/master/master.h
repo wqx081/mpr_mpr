@@ -34,7 +34,47 @@ class WorkerManager;
 class MasterPathHandlers;
 
 class Master : public server::ServerBase {
+ public:
+  static const uint16_t kDefaultPort = 9982;
+  static const uint16_t kDefaultWebPort = 9981;
 
+  explicit Master(const MasterOptions& opts);
+  ~Master();
+
+  Status Init();
+  Status Start();
+
+  Status StartAsync();
+
+  void Shutdown();
+  std::string ToString() const;
+  WorkerManager* worker_manager() { return worker_manager_.get(); }
+
+  const MasterOptions& options();
+  Status GetMasterRegistration(ServerRegistrationPB* registration) const;
+  bool IsShutdown() const;
+
+ private:
+  friend class MasterTest;
+
+  Status InitMasterRegistration();
+
+  enum MasterState {
+    kStopped,
+    kInitialized,
+    kRunning
+  };
+
+  MasterState state_;
+
+  gscoped_ptr<WorkerManager> worker_manager_;
+
+  MasterOptions options_;
+
+  ServerRegistrationPB registration_;
+  std::atomic<bool> registration_initialized_;
+
+  DISALLOW_COPY_AND_ASSIGN(Master);
 };
 
 } // namespace master

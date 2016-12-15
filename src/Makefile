@@ -13,7 +13,7 @@ all:
 	make -C ${SRC_PREFIX}/server
 	make -C ${SRC_PREFIX}/master
 	make -C ${SRC_PREFIX}/tests/master
-#	make -C ${SRC_PREFIX}/worker_server
+	make -C ${SRC_PREFIX}/worker_server
 #	make -C ${SRC_PREFIX}/tests/rpc
 #	make -C ${SRC_PREFIX}/tests/util
 

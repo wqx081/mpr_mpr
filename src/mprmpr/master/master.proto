@@ -49,6 +49,7 @@ message WorkerHeartbeatRequestPB {
 
 message WorkerHeartbeatResponsePB {
   optional MasterErrorPB error = 1;
+  optional bool needs_register = 2 [default = false];
 }
 
 service MasterService {

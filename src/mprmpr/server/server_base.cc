@@ -7,7 +7,7 @@
 #include <gflags/gflags.h>
 
 #include "mprmpr/common/version_info.h"
-#include "mprmpr/common/wire_protocol.pb.h"
+#include "mprmpr/common/common.pb.h"
 #include "mprmpr/base/strings/strcat.h"
 #include "mprmpr/base/strings/substitute.h"
 #include "mprmpr/base/walltime.h"

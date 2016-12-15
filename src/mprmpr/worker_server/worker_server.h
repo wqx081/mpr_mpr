@@ -23,8 +23,8 @@ class Heartbeater;
 
 class WorkerServer : public server::ServerBase {
  public:
-  static const uint16_t kDefaultPort = 7050;
-  static const uint16_t kDefaultWebPort = 8050;
+  static const uint16_t kDefaultPort = 8865;
+  static const uint16_t kDefaultWebPort = 8864;
 
   explicit WorkerServer(const WorkerServerOptions& opts);
   ~WorkerServer();
