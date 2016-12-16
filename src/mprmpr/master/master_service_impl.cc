@@ -53,6 +53,7 @@ void MasterServiceImpl::WorkerHeartbeat(const WorkerHeartbeatRequestPB* req,
                                        rpc->requestor_string());
       resp->set_needs_register(true);
       rpc->RespondSuccess();
+      return;
     } else if (!s.ok()) {
       LOG(WARNING) << strings::Substitute("Unable to look up worker server for heartbeat request $0 from $1: $2",
                                           req->DebugString(),
@@ -67,7 +68,7 @@ void MasterServiceImpl::WorkerHeartbeat(const WorkerHeartbeatRequestPB* req,
   desc->UpdateWorkerStatus(req->worker_status());
 
   //TODO(wqx):
-  LOG(INFO) << "Handle worker server report";
+  LOG(INFO) << "---------- Handle worker server report";
 
   rpc->RespondSuccess();
 }

@@ -52,7 +52,7 @@ class Master : public server::ServerBase {
 
   const MasterOptions& options();
   Status GetMasterRegistration(ServerRegistrationPB* registration) const;
-  bool IsShutdown() const;
+  bool IsShutdown() const { return state_ == kStopped; }
 
  private:
   friend class MasterTest;

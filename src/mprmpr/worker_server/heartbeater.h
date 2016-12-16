@@ -19,12 +19,14 @@ namespace worker_server {
 class WorkerServer;
 struct WorkerServerOptions;
 
+// 心跳器
+// 定时的向Master 发起心跳包，以及报告当前 Worker Server 的负载情况.
+//
 class Heartbeater {
  public:
   Heartbeater(const WorkerServerOptions& options, WorkerServer* server);
   Status Start();
   Status Stop();
-//  void TriggerASAP();
   ~Heartbeater();
 
  private:

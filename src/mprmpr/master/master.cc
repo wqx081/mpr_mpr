@@ -104,6 +104,9 @@ Status Master::InitMasterRegistration() {
   RETURN_NOT_OK_PREPEND(rpc_server()->GetBoundAddresses(&rpc_addrs),
                         "Couldn't get RPC addresses");
   RETURN_NOT_OK(AddHostPortPBs(rpc_addrs, reg.mutable_rpc_addresses()));
+  std::vector<Sockaddr> http_addrs;
+  web_server()->GetBoundAddresses(&http_addrs);
+  RETURN_NOT_OK(AddHostPortPBs(http_addrs, reg.mutable_http_addresses()));
   reg.set_software_version(VersionInfo::GetShortVersionString());
 
   registration_.Swap(&reg);

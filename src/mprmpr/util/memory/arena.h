@@ -19,6 +19,7 @@
 #include "mprmpr/util/memory/memory.h"
 #include "mprmpr/util/mutex.h"
 #include "mprmpr/util/slice.h"
+#include "mprmpr/base/atomicops.h"
 
 using std::allocator;
 

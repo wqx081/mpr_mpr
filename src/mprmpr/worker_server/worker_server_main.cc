@@ -35,7 +35,7 @@ static int WorkerServerMain(int argc, char** argv) {
 
   WorkerServerOptions opts;
   WorkerServer server(opts);
-  LOG(INFO) << "Initializing tablet server...";
+  LOG(INFO) << "Initializing worker server...";
   CHECK_OK(server.Init());
 
   LOG(INFO) << "Starting tablet server...";
