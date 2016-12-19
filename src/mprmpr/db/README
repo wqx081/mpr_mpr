@@ -1,0 +1,91 @@
+
+
+Connection Class
+
+#include "db/mysql.h"
+
+db::Connection connection("localhost",
+                          "user",
+                          "pass",
+                          "database");
+
+std::unique_ptr<db::Connection> conn;
+ConnectionBuilder builder;
+Status s =  builder.set_host("host")
+                   .set_username("username")
+                   .set_password("password")
+                   .set_database("database")
+                   .Build(&conn);
+
+if (!s.ok()) {
+  cout << "Connect Failed: " << s.ToString();
+  abort();
+}
+
+db::Result result;
+s = conn.Query("SELECT * FROM test LIMIT 10", &result);
+
+if (!s.ok()) {
+  cout << "Select Failed: " << s.ToString();
+  abort();
+}
+
+assert(result.AffectedRows() == 0);
+for (auto row : result) {
+
+  cout << "{" << endl;
+  for (auto field : row) {
+    cout << " " << field.first << " => " << field.second << endl;
+  }
+  cout << "}" << endl;
+}
+
+
+//////////////////////////////
+
+db::Result result;
+Status s = conn.Query("SELECT a, b, c FROM test", &result);
+
+if (!s.ok()) {
+  cout << "Select Failed: " << s.ToString();
+  abort();
+}
+
+for (size_t i = 0; i < result.size(); ++i) {
+  auto row = result[i];
+
+  auto field = row[1];
+  auto field1 = row["b"]; // Same as `field`
+
+  unsigned long a = row["a"];
+}
+
+//////////////////////////////
+
+db::Statement st(&conn, "INSERT INTO logs (event_time, describe) VALUES (NOW(), ?), (NOW(), ?), (NOW(), ?)" );
+
+// Status s = st.Prepared();
+// if (!s.ok()) {
+//   cout << "Prepared statement Failed: " << s.ToString();
+//   abort();
+// }
+
+s = st.Execute("First Event Desc", "Second Event Desc", "Third Event Desc");
+if (!s.ok()) {
+  cout << "Execute Failed: " << s.ToString();
+  abort();
+}
+
+db::Statement st1(&conn, "SELECT a, b, c FROM test WHERE a BETWEEN ? and ?");
+s = st1.Execute(5, 10, &result);
+
+if (!s.ok()) {
+  cout << "Execute Failed: " << s.ToString();
+  abort();
+}
+
+assert(result.AffectedRows() == 0);
+
+for (auto row : result) {
+  ...
+}
