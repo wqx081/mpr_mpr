@@ -9,9 +9,7 @@
 
 #include <stdint.h>
 
-// TODO(wqx):
-// #include "mprmpr/db/result_field.h"
-//
+#include "mprmpr/db/result_field.h"
 
 namespace mprmpr {
 namespace db {
@@ -29,8 +27,8 @@ class ResultRow {
             const std::vector<std::unique_ptr<ResultFieldImpl>>& fields);
   virtual ~ResultRow();
   size_t size() const;
-  // const ResultField operator[](size_t index) const;
-  // const ResultField operator[](const std::string& key) const;
+  const ResultField operator[](size_t index) const;
+  const ResultField operator[](const std::string& key) const;
   Iterator begin() const;
   Iterator end() const;
   Iterator find(const std::string& key) const;
@@ -39,21 +37,47 @@ class ResultRow {
   class Iterator {
    public:
     Iterator();
-    Iterator(std::map<std::string, size_t>::const_pointer&& iterator,
-             const ResultRow);
+    Iterator(std::map<std::string, size_t>::const_iterator&& iterator,
+             const ResultRow*);
     Iterator(const Iterator& other);
     virtual ~Iterator();
-    Iterator& operator=(const Iterator& other);
-    Iterator& operator++();
-    Iterator operator++(int);
-    Iterator& operator--();
-    Iterator operator--(int);
-    bool operator==(const Iterator& other) const;
-    bool operator!=(const Iterator& other) const;
-    //TODO(wqx):
-    // std::pair<std::string, ResultField> operator*() const;
-    // std::unique_ptr<std::pair<std::string, ResultField>> operator->() const
-    //
+
+    Iterator& operator=(const Iterator& other) {
+      if (this != &other) {
+        iterator_ = other.iterator_;
+        row_ = other.row_;
+      }
+      return *this;
+    }
+
+    Iterator& operator++() {
+      iterator_++;
+      return *this;
+    }
+
+    Iterator operator++(int) {
+      Iterator it(*this);
+      iterator_++;
+      return it;
+    }
+
+    Iterator& operator--() {
+      iterator_--;
+      return *this;
+    }
+
+    Iterator operator--(int) {
+      Iterator it(*this);
+      iterator_--;
+      return it;
+    }
+
+    bool operator==(const Iterator& other) const { return iterator_ == other.iterator_; }
+    bool operator!=(const Iterator& other) const { return !(*this == other); }
+
+    std::pair<std::string, ResultField> operator*() const;
+    std::unique_ptr<std::pair<std::string, ResultField>> operator->() const;
+
    private:
     std::map<std::string, size_t>::const_iterator iterator_;
     const ResultRow* row_;

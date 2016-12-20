@@ -1,11 +1,14 @@
 #ifndef MPRMPR_DB_STATEMENT_H_
 #define MPRMPR_DB_STATEMENT_H_
+
 #include <memory>
 #include <mysql/mysql.h>
 
 #include "mprmpr/base/macros.h"
 #include "mprmpr/db/connection.h"
+#include "mprmpr/db/parameter.h"
 #include "mprmpr/util/status.h"
+
 
 namespace mprmpr {
 namespace db {
@@ -20,19 +23,20 @@ class Statement {
   virtual ~Statement();
 
   template<typename... Args>
-  Status Execute(Result& result, Args...args) {
-//    auto count = sizeof...(args);
-//    auto* ps = new Parameter[sizeof...(args)]{args...};
-//    return connection_->Execute(result, ps, count);
-    return Status::OK();
+  Status Execute(std::unique_ptr<Result>* result, Args...args) {
+    auto count = sizeof...(args);
+    auto* ps = new Parameter[sizeof...(args)]{ args... };
+    return DoExecute(result, ps, count);
   }
 
  private:
   Connection* connection_;
   MYSQL_STMT* statement_;
+  std::string query_;
   size_t parameters_;
   std::unique_ptr<StatementResultInfo> info_;
-  Status DoExecute(Result& result, Parameter* parameters, size_t count);
+  void Init();
+  Status DoExecute(std::unique_ptr<Result>* result, Parameter* parameters, size_t count);
 
   DISALLOW_COPY_AND_ASSIGN(Statement);
 };

@@ -17,7 +17,8 @@ class ResultFieldImpl;
 class ResultField {
  public:
   explicit ResultField(std::shared_ptr<ResultImpl> result, ResultFieldImpl* field);
-  bool IsNull() const;
+
+  bool IsNULL() const;
   
   operator int8_t() const;
   operator uint16_t() const;

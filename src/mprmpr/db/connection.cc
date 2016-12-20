@@ -1,6 +1,7 @@
 #include "mprmpr/db/connection.h"
 #include "mprmpr/db/statement.h"
 #include "mprmpr/db/local_parameter.h"
+#include "mprmpr/db/result.h"
 
 #include <glog/logging.h>
 
@@ -22,7 +23,43 @@ class MysqlLibrary {
 static MysqlLibrary mysql_library_init_;
 } // namespace
 
+///
+ConnectionBuilder::ConnectionBuilder() {
+  flags_ = CLIENT_IGNORE_SIGPIPE | CLIENT_MULTI_STATEMENTS;
+}
 
+ConnectionBuilder& ConnectionBuilder::set_hostname(const std::string& hostname) {
+  hostname_ = hostname;
+  return *this;
+}
+
+ConnectionBuilder& ConnectionBuilder::set_username(const std::string& username) {
+  username_ = username;
+  return *this;
+}
+
+ConnectionBuilder& ConnectionBuilder::set_password(const std::string& password) {
+  password_ = password;
+  return *this;
+}
+
+ConnectionBuilder& ConnectionBuilder::set_database(const std::string& database) {
+  database_ = database;
+  return *this;
+}
+
+ConnectionBuilder& ConnectionBuilder::set_flags(uint64_t flags) {
+  flags_ = flags;
+  return *this;
+}
+
+Status ConnectionBuilder::Build(std::unique_ptr<Connection>* conn) const {
+  conn->reset(new Connection(hostname_, username_, password_, database_, flags_));
+  RETURN_NOT_OK((*conn)->Connect());
+  return Status::OK();
+}
+
+///
 Connection::Connection(const std::string& hostname, const std::string& username,
                        const std::string& password, const std::string& database, uint64_t flags)
     : connection_(::mysql_init(nullptr)) ,
@@ -92,6 +129,33 @@ Status Connection::Prepare(const std::string& query,
   }
 
   delete [] parameters;
+  return Status::OK();
+}
+
+Status Connection::Query(std::vector<Result>& results, const std::string& query) {
+  if (::mysql_query(connection_, query.c_str())) {
+    return Status::RuntimeError(::mysql_error(connection_));
+  }
+
+  while (true) {
+    auto* result = ::mysql_store_result(connection_);
+    size_t affected_rows = ::mysql_affected_rows(connection_);
+    if (result) {
+      results.push_back(Result(result));
+    } else if (::mysql_field_count(connection_)) {
+      return Status::RuntimeError(::mysql_error(connection_));
+    } else { // UPDATE, INSERT, DELETE
+      results.push_back(Result(affected_rows,
+                               ::mysql_insert_id(connection_)));
+    }
+
+    switch (::mysql_next_result(connection_)) {
+      case -1: return Status::OK();
+      case 0:  continue;
+      default: return Status::RuntimeError(::mysql_error(connection_));
+    }
+  }
+
   return Status::OK();
 }
 

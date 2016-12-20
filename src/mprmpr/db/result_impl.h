@@ -4,10 +4,10 @@
 #include <vector>
 #include <map>
 
+#include "mprmpr/db/result_field_impl.h"
+
 namespace mprmpr {
 namespace db {
-
-class ResultFieldImpl;
 
 class ResultImpl {
  public:

@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 #include <ctime>
+#include <string>
+
 #include "mprmpr/base/int128.h"
 
 namespace mprmpr {
@@ -12,7 +14,8 @@ class ResultFieldImpl {
  public:
   virtual ~ResultFieldImpl() {}
 
-  virtual bool IsNull() const = 0;
+  virtual bool IsNULL() const = 0;
+
   virtual operator int8_t() const = 0;
   virtual operator int16_t() const = 0;
   virtual operator uint16_t() const = 0;

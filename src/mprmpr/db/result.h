@@ -6,6 +6,8 @@
 
 #include <mysql/mysql.h>
 
+#include "mprmpr/db/result_row.h"
+
 namespace mprmpr {
 namespace db {
 
@@ -18,14 +20,39 @@ class Result {
     Iterator();
     Iterator(std::shared_ptr<ResultImpl> result, size_t index);
     Iterator(const Iterator& other);
-    Iterator& operator=(const Iterator& other);
-    Iterator& operator++();
-    Iterator& operator++(int offset);
-    bool operator==(const Iterator& other);
-    bool operator!=(const Iterator& other);
-    // TODO(wqx)
-    // ResultRow operator*()
-    // std::unique_ptr<ResultRow> operator->();
+
+    Iterator& operator=(const Iterator& other) {
+      if (this != &other) {
+        result_ = other.result_;
+        index_ = other.index_;
+      }
+      return *this;
+    }
+
+    Iterator& operator++() {
+      ++index_;
+      return *this;
+    }
+
+    Iterator operator++(int) {
+      Iterator it(*this);
+      ++index_;
+      return it;
+    }
+
+    bool operator==(const Iterator& other) {
+      if (result_ != other.result_) return false;
+      if (!Valid() && !other.Valid()) return true;
+      return index_ == other.index_;
+    }
+
+    bool operator!=(const Iterator& other) {
+      return !(*this == other);
+    }
+
+    ResultRow operator*();
+    std::unique_ptr<ResultRow> operator->();
+
    private:
     std::shared_ptr<ResultImpl> result_;
     size_t index_;
@@ -44,8 +71,7 @@ class Result {
   uint64_t insert_id() const;
   size_t size() const;
 
-  // TODO(wqx)
-  // ResultRow operator[](size_t index);
+  ResultRow operator[](size_t index);
 
   Iterator begin() const;
   Iterator end() const;

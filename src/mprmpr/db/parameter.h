@@ -7,21 +7,22 @@
 
 #include <mysql/mysql.h>
 
+#include "mprmpr/base/strings/stringpiece.h"
+
 namespace mprmpr {
 namespace db {
 
 class Parameter : public MYSQL_BIND {
  public:
-  Parameter(int8_t v) : Parameter(MYSQL_TYPE_TINY, v) {}
-  Parameter(uint8_t v) : Parameter(MYSQL_TYPE_TINY, v) {}
-  Parameter(int16_t v) : Parameter(MYSQL_TYPE_SHORT, v) {}
-  Parameter(uint16_t v) : Parameter(MYSQL_TYPE_SHORT, v) {}
-  Parameter(int32_t v) : Parameter(MYSQL_TYPE_LONG, v) {}
-  Parameter(uint32_t v) : Parameter(MYSQL_TYPE_LONG, v) {}
-  Parameter(int64_t v) : Parameter(MYSQL_TYPE_LONGLONG, v) {}
-  Parameter(uint64_t v) : Parameter(MYSQL_TYPE_LONGLONG, v) {}
-  Parameter(float v) : Parameter(MYSQL_TYPE_FLOAT, v) {}
-  Parameter(double v) : Parameter(MYSQL_TYPE_DOUBLE, v) {}
+  explicit Parameter(int8_t v) : Parameter(MYSQL_TYPE_TINY, v) {}
+  explicit Parameter(int16_t v) : Parameter(MYSQL_TYPE_SHORT, v) {}
+  explicit Parameter(uint16_t v) : Parameter(MYSQL_TYPE_SHORT, v) {}
+  explicit Parameter(int32_t v) : Parameter(MYSQL_TYPE_LONG, v) {}
+  explicit Parameter(uint32_t v) : Parameter(MYSQL_TYPE_LONG, v) {}
+  explicit Parameter(int64_t v) : Parameter(MYSQL_TYPE_LONGLONG, v) {}
+  explicit Parameter(uint64_t v) : Parameter(MYSQL_TYPE_LONGLONG, v) {}
+  explicit Parameter(float v) : Parameter(MYSQL_TYPE_FLOAT, v) {}
+  explicit Parameter(double v) : Parameter(MYSQL_TYPE_DOUBLE, v) {}
 
   Parameter(const std::string& value) {
     ::memset(this, 0, sizeof(*this));
@@ -32,6 +33,17 @@ class Parameter : public MYSQL_BIND {
 
     buffer = data;
     buffer_length = value.size();
+  }
+
+  Parameter(const char* value) {
+    ::memset(this, 0, sizeof(*this));
+    buffer_type = MYSQL_TYPE_STRING;
+
+    char* data = static_cast<char*>(std::malloc(strlen(value)));
+    std::memcpy(data, value, strlen(value));
+
+    buffer = data;
+    buffer_length = strlen(value);
   }
 
   Parameter(const std::vector<char>& value) {
@@ -60,6 +72,7 @@ class Parameter : public MYSQL_BIND {
     is_unsigned = std::is_unsigned<T>::value;
     T* data = static_cast<T*>(std::malloc(sizeof(T)));
     *data = value;
+
     buffer = data;
   }
 };
