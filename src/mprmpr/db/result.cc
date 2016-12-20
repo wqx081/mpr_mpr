@@ -31,6 +31,14 @@ size_t Result::affected_rows() const {
   return affected_rows_;
 }
 
+Result::Iterator Result::begin() const {
+  return Iterator(result_, 0);
+}
+
+Result::Iterator Result::end() const {
+  return Iterator(result_, result_->size());
+}
+
 // Iterator
 Result::Iterator::Iterator(std::shared_ptr<ResultImpl> result, size_t index)
     : result_(result),

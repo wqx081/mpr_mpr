@@ -9,6 +9,7 @@
 
 #include "mprmpr/base/macros.h"
 #include "mprmpr/util/status.h"
+#include "mprmpr/db/local_parameter.h"
 
 namespace mprmpr {
 namespace db {
@@ -60,19 +61,29 @@ class Connection {
   virtual ~Connection();
 
   Status Connect();
-  Status Query(std::vector<Result>& results, const std::string& query);
+  //Status Query(std::vector<Result>& results, const std::string& query);
+  Status Query(const std::string& query);
 
   template<typename... Args>
-  Status Execute(std::vector<Result>& results, const std::string& query, Args... args) {
+  //Status Execute(std::vector<Result>& results, const std::string& query, Args... args) {
+  Status Execute(const std::string& query, Args... args) {
     if (sizeof...(args) == 0) {
-      return this->Query(results, query);
+      return this->Query(query);
     }
     std::string ret;
     Status s = Prepare(query, new LocalParameter[sizeof...(args)] { args...}, sizeof...(args), ret);
     if (!s.ok()) {
       return s;
     }
-    return this->Query(results, ret);
+    return this->Query(ret);
+  }
+
+  const std::vector<Result*> GetResults() const {
+    std::vector<Result*> ret;
+    for (auto& v : results_) {
+      ret.push_back(v.get());  
+    }
+    return ret;
   }
 
  private:
@@ -83,6 +94,7 @@ class Connection {
   std::string password_;
   std::string database_;
   uint64_t flags_;
+  std::vector<std::unique_ptr<Result>> results_;
 
   Statement* CreateStatement(const char* query);
   Status Prepare(const std::string& query, LocalParameter* parameters, size_t count, std::string& result);

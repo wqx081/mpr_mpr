@@ -51,7 +51,7 @@ void Statement::Init() {
   }
 }
 
-Status Statement::DoExecute(std::unique_ptr<Result>* result, Parameter* parameters, size_t count) {
+Status Statement::DoExecute(Parameter* parameters, size_t count) {
   if (statement_ == nullptr) {
     delete[] parameters;
     return Status::InvalidArgument("Cannot exeucte invalid statement: ");
@@ -73,7 +73,7 @@ Status Statement::DoExecute(std::unique_ptr<Result>* result, Parameter* paramete
       parameters_ = 0;
       info_.reset();
       Init();
-      return DoExecute(result, parameters, count);
+      return DoExecute(parameters, count);
     } else {
       delete [] parameters;
       return Status::RuntimeError(::mysql_stmt_error(statement_));
@@ -83,10 +83,10 @@ Status Statement::DoExecute(std::unique_ptr<Result>* result, Parameter* paramete
   delete [] parameters;
 
   if (!info_) {
-    result->reset(new Result(::mysql_stmt_affected_rows(statement_), ::mysql_stmt_insert_id(statement_)));
+    result_.reset(new Result(::mysql_stmt_affected_rows(statement_), ::mysql_stmt_insert_id(statement_)));
   } else {
     auto rows = info_->Rows();
-    result->reset(new Result(std::move(rows)));
+    result_.reset(new Result(std::move(rows)));
   }
   return Status::OK();
 }

@@ -23,10 +23,14 @@ class Statement {
   virtual ~Statement();
 
   template<typename... Args>
-  Status Execute(std::unique_ptr<Result>* result, Args...args) {
+  Status Execute(Args...args) {
     auto count = sizeof...(args);
     auto* ps = new Parameter[sizeof...(args)]{ args... };
-    return DoExecute(result, ps, count);
+    return DoExecute(ps, count);
+  }
+
+  Result* GetResult() const {
+    return result_.get();
   }
 
  private:
@@ -35,8 +39,9 @@ class Statement {
   std::string query_;
   size_t parameters_;
   std::unique_ptr<StatementResultInfo> info_;
+  std::unique_ptr<Result> result_;
   void Init();
-  Status DoExecute(std::unique_ptr<Result>* result, Parameter* parameters, size_t count);
+  Status DoExecute(Parameter* parameters, size_t count);
 
   DISALLOW_COPY_AND_ASSIGN(Statement);
 };

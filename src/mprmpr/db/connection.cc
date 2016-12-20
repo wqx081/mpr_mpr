@@ -132,7 +132,7 @@ Status Connection::Prepare(const std::string& query,
   return Status::OK();
 }
 
-Status Connection::Query(std::vector<Result>& results, const std::string& query) {
+Status Connection::Query(const std::string& query) {
   if (::mysql_query(connection_, query.c_str())) {
     return Status::RuntimeError(::mysql_error(connection_));
   }
@@ -140,13 +140,17 @@ Status Connection::Query(std::vector<Result>& results, const std::string& query)
   while (true) {
     auto* result = ::mysql_store_result(connection_);
     size_t affected_rows = ::mysql_affected_rows(connection_);
+    std::unique_ptr<Result> rt;
+
     if (result) {
-      results.push_back(Result(result));
+      rt.reset(new Result(result));
+      results_.push_back(std::move(rt));
     } else if (::mysql_field_count(connection_)) {
       return Status::RuntimeError(::mysql_error(connection_));
     } else { // UPDATE, INSERT, DELETE
-      results.push_back(Result(affected_rows,
-                               ::mysql_insert_id(connection_)));
+      rt.reset(new Result(affected_rows,
+                          ::mysql_insert_id(connection_)));
+      results_.push_back(std::move(rt));
     }
 
     switch (::mysql_next_result(connection_)) {
