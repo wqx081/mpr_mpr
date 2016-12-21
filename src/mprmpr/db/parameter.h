@@ -7,22 +7,29 @@
 
 #include <mysql/mysql.h>
 
-#include "mprmpr/base/strings/stringpiece.h"
-
 namespace mprmpr {
 namespace db {
 
 class Parameter : public MYSQL_BIND {
  public:
-  explicit Parameter(int8_t v) : Parameter(MYSQL_TYPE_TINY, v) {}
-  explicit Parameter(int16_t v) : Parameter(MYSQL_TYPE_SHORT, v) {}
-  explicit Parameter(uint16_t v) : Parameter(MYSQL_TYPE_SHORT, v) {}
-  explicit Parameter(int32_t v) : Parameter(MYSQL_TYPE_LONG, v) {}
-  explicit Parameter(uint32_t v) : Parameter(MYSQL_TYPE_LONG, v) {}
-  explicit Parameter(int64_t v) : Parameter(MYSQL_TYPE_LONGLONG, v) {}
-  explicit Parameter(uint64_t v) : Parameter(MYSQL_TYPE_LONGLONG, v) {}
-  explicit Parameter(float v) : Parameter(MYSQL_TYPE_FLOAT, v) {}
-  explicit Parameter(double v) : Parameter(MYSQL_TYPE_DOUBLE, v) {}
+  explicit Parameter(int8_t v)
+    : Parameter(MYSQL_TYPE_TINY, v) {}
+  explicit Parameter(int16_t v) 
+    : Parameter(MYSQL_TYPE_SHORT, v) {}
+  explicit Parameter(uint16_t v) 
+    : Parameter(MYSQL_TYPE_SHORT, v) {}
+  explicit Parameter(int32_t v) 
+    : Parameter(MYSQL_TYPE_LONG, v) {}
+  explicit Parameter(uint32_t v) 
+    : Parameter(MYSQL_TYPE_LONG, v) {}
+  explicit Parameter(int64_t v) 
+    : Parameter(MYSQL_TYPE_LONGLONG, v) {}
+  explicit Parameter(uint64_t v) 
+    : Parameter(MYSQL_TYPE_LONGLONG, v) {}
+  explicit Parameter(float v) 
+    : Parameter(MYSQL_TYPE_FLOAT, v) {}
+  explicit Parameter(double v) 
+    : Parameter(MYSQL_TYPE_DOUBLE, v) {}
 
   Parameter(const std::string& value) {
     ::memset(this, 0, sizeof(*this));

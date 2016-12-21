@@ -38,6 +38,7 @@ Statement::~Statement() {
 void Statement::Init() {
   statement_ = ::mysql_stmt_init(connection_->connection_);
   DCHECK(statement_) << "Unable to init statement";   
+
   if (::mysql_stmt_prepare(statement_, query_.c_str(), query_.size())) {
     LOG(ERROR) << ::mysql_stmt_error(statement_);
     ::mysql_stmt_close(statement_);
@@ -68,6 +69,8 @@ Status Statement::DoExecute(Parameter* parameters, size_t count) {
   }
 
   if (::mysql_stmt_execute(statement_)) {
+    // 虽然我们设置了 reconnect 选项, 但是如果连接是正好在执行mysql_stmt_execute 之前断开
+    // , 那么 mysql_stmt_execute 将执行失败，这与 mysql_query 的处理不同. 
     if (::mysql_stmt_errno(statement_) == CR_SERVER_LOST) {
       statement_ = nullptr;
       parameters_ = 0;

@@ -6,6 +6,7 @@
 
 #include <mysql/mysql.h>
 
+#include "mprmpr/base/macros.h"
 #include "mprmpr/db/result_row.h"
 
 namespace mprmpr {
@@ -13,6 +14,9 @@ namespace db {
 
 class ResultImpl;
 
+// 负责管理由mysqld 返回的SQL语句执行结果:
+//   MYSQL_RES*
+//   (affected_rows, insert_id)
 class Result {
  public:
   class Iterator {
@@ -64,8 +68,8 @@ class Result {
   Result(size_t affected_rows, uint64_t insert_id);
   Result(std::nullptr_t result);
   Result(Result&& other);
-  Result(const Result& other) = delete;
   virtual ~Result();
+
   bool Valid() const;
   size_t affected_rows() const;
   uint64_t insert_id() const;
@@ -80,6 +84,8 @@ class Result {
   std::shared_ptr<ResultImpl> result_;
   size_t affected_rows_;
   uint64_t insert_id_;
+
+  DISALLOW_COPY_AND_ASSIGN(Result);
 };
 
 } // namespace db

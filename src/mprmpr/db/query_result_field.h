@@ -20,12 +20,13 @@ class QueryResultField : public ResultFieldImpl {
   virtual operator int8_t()    const override { return IsNULL() ? 0 : std::stoi(data_);  }
   virtual operator uint16_t()  const override { return IsNULL() ? 0 : std::stoi(data_);  }
   virtual operator int16_t()   const override { return IsNULL() ? 0 : std::stoi(data_);  }
-  virtual operator uint32_t()  const override { return IsNULL() ? 0 : std::stoul(data_);  }
+  virtual operator uint32_t()  const override { return IsNULL() ? 0 : std::stoul(data_); }
   virtual operator int32_t()   const override { return IsNULL() ? 0 : std::stoi(data_);  }
-  virtual operator uint64_t()  const override { return IsNULL() ? 0 : std::stoull(data_); }
-  virtual operator int64_t()   const override { return IsNULL() ? 0 : std::stoll(data_);  }
+  virtual operator uint64_t()  const override { return IsNULL() ? 0 : std::stoull(data_);}
+  virtual operator int64_t()   const override { return IsNULL() ? 0 : std::stoll(data_); }
   virtual operator float()     const override { return IsNULL() ? 0 : std::stof(data_);  }
   virtual operator double()    const override { return IsNULL() ? 0 : std::stod(data_);  }
+
   virtual operator uint128() const override {
     DCHECK(false) << "TODO(wqx)";
   }

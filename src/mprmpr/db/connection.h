@@ -61,21 +61,21 @@ class Connection {
   virtual ~Connection();
 
   Status Connect();
-  //Status Query(std::vector<Result>& results, const std::string& query);
   Status Query(const std::string& query);
 
   template<typename... Args>
-  //Status Execute(std::vector<Result>& results, const std::string& query, Args... args) {
   Status Execute(const std::string& query, Args... args) {
+    results_.clear();
+
     if (sizeof...(args) == 0) {
-      return this->Query(query);
+      return Query(query);
     }
     std::string ret;
     Status s = Prepare(query, new LocalParameter[sizeof...(args)] { args...}, sizeof...(args), ret);
     if (!s.ok()) {
       return s;
     }
-    return this->Query(ret);
+    return Query(ret);
   }
 
   const std::vector<Result*> GetResults() const {
@@ -83,20 +83,26 @@ class Connection {
     for (auto& v : results_) {
       ret.push_back(v.get());  
     }
-    return ret;
+    return ret; // C++11 使用 MOVE 语义
   }
 
  private:
   MYSQL* connection_;
+
+  // 用于 cached statement, 目标未支持
   std::unordered_map<const char*, std::unique_ptr<Statement>> statements_;
+
   std::string hostname_;
   std::string username_;
   std::string password_;
   std::string database_;
   uint64_t flags_;
   std::vector<std::unique_ptr<Result>> results_;
-
+  
+  // 用于 cached statement, 目标未支持
   Statement* CreateStatement(const char* query);
+
+  // 解析query, 并且把? 占位符, 使用LocalParameter对应的值来替换.
   Status Prepare(const std::string& query, LocalParameter* parameters, size_t count, std::string& result);
 
   

@@ -1,6 +1,8 @@
 #ifndef MPRMPR_DB_STATEMENT_DATETIME_RESULT_FIELD_H_
 #define MPRMPR_DB_STATEMENT_DATETIME_RESULT_FIELD_H_
 
+#include <glog/logging.h>
+
 #include "mprmpr/db/statement_result_field.h"
 
 namespace mprmpr {
@@ -21,7 +23,12 @@ class StatementDatetimeResultField : public StatementResultField {
   virtual operator double()    const override { return 0; }
   virtual operator uint128()   const override { return 0; }
 
-  virtual operator std::string() const override { return std::string(""); /* TODO */ }
+  virtual operator std::string() const override { 
+    std::tm datetime = *this;
+    char buf[64] = {0};
+    std::strftime(buf, 64, "%Y-%m-%d %H:%M:%S", &datetime);
+    return std::string(buf);
+  }
   
   virtual operator std::tm() const override {
     return std::tm { (int)value_.second, 

@@ -40,6 +40,7 @@ class Statement {
   size_t parameters_;
   std::unique_ptr<StatementResultInfo> info_;
   std::unique_ptr<Result> result_;
+
   void Init();
   Status DoExecute(Parameter* parameters, size_t count);
 

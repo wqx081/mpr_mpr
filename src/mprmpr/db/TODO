@@ -1,0 +1,14 @@
+DATETIME    数据类型输出支持    +
+
+Status  增加对Mysql数据库的支持
+DCHECK  程序中的某些错误不需要 abort()
+
+Reconnt 添加mysql_ping + reconnect +
+        当设置 reconnt 选项时, 如果连接断开, 执行 mysql_query 会自动连接        
+        当要执行 mysql_stmt_execute 之前, 连接超时, 则我们要重新执行 mysql_stmt_init, mysql_stmt_prepare...
+        然后再次执行 mysql_stmt_execute.
+
+
+Transaction 增加事务的支持
+Multi-Thread 增加连接池
+Cached-Statement  Connection 对象支持 cached-statement

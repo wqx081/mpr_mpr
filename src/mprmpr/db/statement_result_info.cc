@@ -64,6 +64,7 @@ size_t StatementResultInfo::size() const {
 
 std::shared_ptr<StatementResultImpl> StatementResultInfo::Rows() {
   if (::mysql_stmt_store_result(statement_)) {
+    //TODO(wqx):
     DCHECK(false) << mysql_stmt_error(statement_);
   }
 
@@ -150,6 +151,7 @@ std::shared_ptr<StatementResultImpl> StatementResultInfo::Rows() {
     } // for 2
     
     if (::mysql_stmt_bind_result(statement_, bind_.data())) {
+      //TODO(wqx):
       DCHECK(false) << "Error: " << ::mysql_stmt_error(statement_);
     }
     
@@ -157,19 +159,24 @@ std::shared_ptr<StatementResultImpl> StatementResultInfo::Rows() {
       case 0: 
         break;
       case 1: 
+        // TODO(wqx):
         DCHECK(false) << "Error: " << ::mysql_stmt_error(statement_); 
         break;
       case MYSQL_NO_DATA:
+        // TODO(wqx):
         DCHECK(false) << "Error: result set corrupted";
         break;
       case MYSQL_DATA_TRUNCATED:
         for (size_t i = 0; i < bind_.size(); ++i) {
           auto& bind = bind_[i];
           auto* field = static_cast<StatementResultField*>(row[i].get());
+
           if (!field->IsDynamic() || field->IsNULL()) {
             continue;
           }
+
           StatementDynamicResultField* dynamic = static_cast<StatementDynamicResultField*>(field);
+
           if (!dynamic->size_) {
             continue;
           }
